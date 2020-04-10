@@ -1,0 +1,8 @@
+task:
+    regression
+model_class:
+    ModelNNRegressor
+model_params:
+    learning_rate: 0.0004
+    loss: mse
+    epochs: 100

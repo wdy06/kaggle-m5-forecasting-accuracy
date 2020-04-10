@@ -1,0 +1,11 @@
+- exp_name: '20200120020348'
+  model_name: 002_lgbm_baseline
+  weight: 1
+
+- exp_name: '20200120011438'
+  model_name: 102_catboost_regression
+  weight: 1
+
+- exp_name: '20200120031400'
+  model_name: 300_nn_regression
+  weight: 1

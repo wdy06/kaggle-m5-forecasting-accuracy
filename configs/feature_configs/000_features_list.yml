@@ -1,0 +1,45 @@
+features:
+    - item_id
+    - dept_id
+    - cat_id
+    - store_id
+    - state_id
+    - year
+    - month
+    - week
+    - day
+    - dayofweek
+    - event_name_1
+    - event_type_1
+    - event_name_2
+    - event_type_2
+    - snap_CA
+    - snap_TX
+    - snap_WI
+    - sell_price
+    - lag_t28
+    - lag_t29
+    - lag_t30
+    - rolling_mean_t7
+    - rolling_std_t7
+    - rolling_mean_t30
+    - rolling_mean_t90
+    - rolling_mean_t180
+    - rolling_std_t30
+    - price_change_t1
+    - price_change_t365
+    - rolling_price_std_t7
+    - rolling_price_std_t30
+    - rolling_skew_t30
+    - rolling_kurt_t30
+
+categorical_features:
+    - item_id
+    - dept_id
+    - cat_id
+    - store_id
+    - state_id
+    - event_name_1
+    - event_type_1
+    - event_name_2
+    - event_type_2

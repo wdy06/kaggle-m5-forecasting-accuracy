@@ -1,0 +1,20 @@
+task:
+    regression
+model_class:
+    ModelXGBRegressor
+model_params:
+    thread_count: -1
+    n_estimators: 10000
+    learning_rate: 0.01
+    verbose: -1
+    depth: 10
+    early_stopping_rounds: 300
+    random_seed: 42
+    colsample_bytree: 0.8
+    learning_rate: 0.01
+    max_depth: 10
+    subsample: 1
+    min_child_weight: 3
+    gamma: 0.25
+    objective: 'reg:squarederror'
+    eval_metric: rmse
