@@ -64,10 +64,18 @@ def generate_features(data):
 
 if __name__ == '__main__':
     output_path = utils.FEATURE_DIR / 'baseline_features.pkl'
+    encoder_path = utils.FEATURE_DIR / 'encoder.pkl'
     print('generating features...')
     dataset = M5Dataset()
     data = preprocessing.melt_and_merge(
-        dataset.calendar, dataset.sell_prices, dataset.main_df, dataset.submission, merge=True)
+        dataset.calendar, dataset.sell_prices, dataset.main_df, dataset.submission,
+        merge=True)
+    # label encoding
+    cat = ['item_id', 'dept_id', 'cat_id', 'store_id', 'state_id',
+           'event_name_1', 'event_type_1', 'event_name_2', 'event_type_2']
+    data, encoder = preprocessing.label_encoding(df=data, cat_features=cat,
+                                                 verbose=True)
     data = generate_features(data)
     utils.dump_pickle(data, output_path)
+    utils.dump_pickle(encoder, encoder_path)
     print('finished generating features !!')

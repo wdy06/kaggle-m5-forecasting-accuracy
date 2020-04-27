@@ -15,6 +15,7 @@ import mylogger
 import preprocessing
 import utils
 from runner import Runner
+from evaluater import WRMSSEEvaluator
 
 
 parser = argparse.ArgumentParser(description='kaggle data science bowl 2019')
@@ -46,19 +47,11 @@ try:
     train_feat_path = utils.FEATURE_DIR / 'baseline_features.pkl'
     X = utils.load_pickle(train_feat_path)
     print(X.columns)
-    # X_test = utils.load_pickle(test_feat_path)
 
-    # new_train = features.add_agg_feature_train(new_train)
-    # X_test = features.add_agg_feature_test(X_test, X_test_all)
-
-    # sandesh.send(args.feature)
     features_list = utils.load_yaml(args.feature)
     utils.dump_yaml(features_list, result_dir / 'features_list.yml')
     all_features = features_list['features']
     categorical_feat = features_list['categorical_features']
-    # if args.debug:
-    #     all_features = [
-    #         feat for feat in all_features if feat in new_train.columns]
 
     logger.debug(all_features)
     logger.debug(f'features num: {len(all_features)}')
@@ -73,6 +66,11 @@ try:
     model_params = config['model_params']
     model_params['categorical_feature'] = categorical_feat
 
+    # label encoding
+    # X, encoder_dict = preprocessing.label_encoding(
+    #     X, categorical_feat, verbose=True)
+    # X, encoder_dict = preprocessing.label_encoding(
+    #     X, categorical_feat, verbose=True)
     if args.debug:
         model_params['learning_rate'] = 1
 
@@ -81,14 +79,6 @@ try:
     #     X, X_test, y, encoder_dict = preprocess.preprocess_for_nn(
     #         X, X_test, y, all_features, categorical_feat)
     #     utils.dump_pickle(encoder_dict, result_dir / 'encoder_dict.pkl')
-
-    # if config['model_class'] == 'ModelLGBMRegressor':
-    #     model_params['device'] = 'gpu'
-    #     model_params['gpu_platform_id'] = 0
-    #     model_params['gpu_device_id'] = 0
-    #     model_params['gpu_use_dp'] = True
-    # if config['model_class'] == 'ModelXGBRegressor':
-    #     model_params['tree_method'] = 'gpu_hist'
 
     oof = np.zeros(len(X))
     # create folds
@@ -130,17 +120,34 @@ try:
                     fold_indices=fold_indices
                     )
     val_score, oof_preds = runner.run_train_cv()
+    X_train['pred_demand'] = oof_preds
+    # evaluate wrmssee score
+    encoder_dict = utils.load_pickle(utils.FEATURE_DIR / 'encoder.pkl')
+    utils.dump_pickle(X_train, 'tmp_X_train.pkl')
+    utils.dump_pickle(fold_indices, 'fold_indices.pkl')
+    for train_idx, val_idx in fold_indices:
+        # X_train['pred_demand'] = oof_preds
+        train_df = preprocessing.melt_to_pivot(
+            X_train.iloc[train_idx], 'demand', encoder_dict)
+        valid_df = preprocessing.melt_to_pivot(
+            X_train.iloc[val_idx], 'demand', encoder_dict)
+        wrmssee_evaluater = WRMSSEEvaluator(train_df, valid_df)
+        preds_df = preprocessing.melt_to_pivot(
+            X_train.iloc[val_idx], 'pred_demand', encoder_dict)
+        preds_df = preds_df[[
+            i for i in preds_df.columns if i.startswith('d_')]]
+        score = wrmssee_evaluater.score(preds_df)
+        logger.debug(f'wrmssee score: {score}')
+
     val_score = metrics.rmse(
         oof_preds[all_val_idx], X_train[TARGET_COL][all_val_idx])
     runner.save_importance_cv()
 
     logger.debug('-' * 30)
+    logger.debug(f'WRMSSEE score: {score}')
     logger.debug(f'OOF RMSE: {val_score}')
     # logger.debug(f'OOF QWK: {val_score}')
     logger.debug('-' * 30)
-
-    # sandesh.send(f'OOF RMSE: {val_rmse}')
-    # sandesh.send(f'OOF QWK: {val_score}')
 
     # process test set
     # X_test = utils.load_pickle(test_feat_path)
@@ -149,7 +156,7 @@ try:
     # utils.dump_pickle(X_test, result_dir / 'test_x_all.pkl')
 
     # make final prediction csv
-    save_path = result_dir / f'submission_val{val_score:.5f}.csv'
+    save_path = result_dir / f'submission_val{score:.5f}.csv'
     submission = pd.read_csv(utils.DATA_DIR / 'sample_submission.csv')
     predictions = X_test[['id', 'date', TARGET_COL]]
     predictions = pd.pivot(predictions, index='id',
@@ -161,8 +168,6 @@ try:
     validation = submission[['id']].merge(predictions, on='id')
     final = pd.concat([validation, evaluation])
     final.to_csv(save_path, index=False)
-    # submission['accuracy_group'] = np.round(preds).astype('int')
-    # submission.to_csv(save_path, index=False)
     logger.debug(f'save to {save_path}')
     # sandesh.send(f'finish: {save_path}')
     # sandesh.send('-' * 30)

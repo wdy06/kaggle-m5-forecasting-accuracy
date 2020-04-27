@@ -1,12 +1,13 @@
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
+from joblib import Parallel, delayed
 
 import utils
 
 
 def melt_and_merge(calendar, sell_prices, sales_train_validation, submission,
-                   merge=True, fill_na=True, label_encoding=True):
+                   merge=True, fill_na=True):
 
     # melt sales data, get it ready for training
     sales_train_validation = pd.melt(sales_train_validation, id_vars=[
@@ -58,6 +59,7 @@ def melt_and_merge(calendar, sell_prices, sales_train_validation, submission,
     calendar.drop(['weekday', 'wday', 'month', 'year'], inplace=True, axis=1)
 
     # delete test2 for now
+    # TODO: update for test2
     data = data[data['part'] != 'test2']
 
     if merge:
@@ -77,10 +79,45 @@ def melt_and_merge(calendar, sell_prices, sales_train_validation, submission,
         for feature in nan_features:
             data[feature].fillna('unknown', inplace=True)
 
-    if label_encoding:
-        cat = ['item_id', 'dept_id', 'cat_id', 'store_id', 'state_id',
-               'event_name_1', 'event_type_1', 'event_name_2', 'event_type_2']
-    for feature in cat:
-        encoder = LabelEncoder()
-        data[feature] = encoder.fit_transform(data[feature])
+    # if label_encoding:
+    #     cat = ['item_id', 'dept_id', 'cat_id', 'store_id', 'state_id',
+    #            'event_name_1', 'event_type_1', 'event_name_2', 'event_type_2']
+    #     for feature in cat:
+    #         encoder = LabelEncoder()
+    #         data[feature] = encoder.fit_transform(data[feature])
     return data
+
+
+def melt_to_pivot(melt_df, target_col, encoder_dict):
+    index_columns = ['id', 'item_id', 'dept_id',
+                     'cat_id', 'store_id', 'state_id']
+    index_df = melt_df[index_columns].drop_duplicates().copy()
+    demand_df = pd.pivot(melt_df, index='id', columns='date',
+                         values=target_col).reset_index().copy()
+    demand_df = pd.merge(index_df, demand_df, on='id', how='left')
+    demand_df = demand_df.reset_index(drop=True)
+    # print(demand_df)
+    # print(demand_df.columns)
+    demand_df.columns = index_columns + \
+        [f'd_{i}' for i in range(
+            1, len(demand_df.columns) - len(index_columns) + 1)]
+
+    # print('decoding categorical columns...')
+    for col in index_columns:
+        # print(col)
+        encoder = encoder_dict.get(col)
+        if encoder is not None:
+            # print(f'aa: {col}')
+            demand_df[col] = encoder.inverse_transform(demand_df[col])
+    return demand_df
+
+
+def label_encoding(df, cat_features, verbose=False):
+    encoder_dict = {}
+    for feature in cat_features:
+        if verbose:
+            print(f'label encoding {feature} ...')
+        encoder = LabelEncoder()
+        df[feature] = encoder.fit_transform(df[feature])
+        encoder_dict[feature] = encoder
+    return df, encoder_dict
