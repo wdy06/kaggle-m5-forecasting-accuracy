@@ -1,3 +1,4 @@
+import warnings
 from typing import Union
 
 import numpy as np
@@ -42,9 +43,6 @@ class WRMSSEEvaluator(object):
         #     self.valid_df = pd.concat([self.train_df[self.id_columns], self.valid_df],
         #                               axis=1,
         #                               sort=False)
-        # print('---------')
-        # print(self.valid_df.columns)
-        # print('---------')
         self.train_series = self.trans_30490_to_42840(self.train_df,
                                                       self.train_target_columns,
                                                       self.group_ids)
@@ -67,6 +65,7 @@ class WRMSSEEvaluator(object):
             series = self.train_series.iloc[i].values
             series = series[np.argmax(series != 0):]
             scale = ((series[1:] - series[:-1]) ** 2).mean()
+
             scales.append(scale)
         return np.array(scales)
 
@@ -79,9 +78,6 @@ class WRMSSEEvaluator(object):
             #         if type(i) in [str, int, np.int64]:
             return str(i)
         else:
-            #             print(i)
-            #             print(type(i))
-            #             return "--".join(str(i))
             return "--".join(i)
 
     def get_weight_df(self) -> pd.DataFrame:
@@ -130,11 +126,8 @@ class WRMSSEEvaluator(object):
         '''
         transform 30490 sries to all 42840 series
         '''
-        # print(group_ids)
-        # print(cols)
         series_map = {}
         for i, group_id in enumerate(tqdm(self.group_ids, leave=False, disable=dis)):
-            # print('group_ids: ', group_id)
             tr = df.groupby(group_id)[cols].sum()
             for i in range(len(tr)):
                 series_map[self.get_name(tr.index[i])] = tr.iloc[i].values
@@ -163,7 +156,8 @@ class WRMSSEEvaluator(object):
                                                 self.group_ids,
                                                 True)
         self.rmsse = self.get_rmsse(valid_preds)
-        self.contributors = pd.concat([self.weights, self.rmsse],
+        self.contributors = pd.concat([self.weights[~np.isinf(self.rmsse)],
+                                       self.rmsse[~np.isinf(self.rmsse)]],
                                       axis=1,
                                       sort=False).prod(axis=1)
         return np.sum(self.contributors)

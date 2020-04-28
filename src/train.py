@@ -1,11 +1,11 @@
 import argparse
+import gc
 import os
 import random
 import shutil
 
 import numpy as np
 import pandas as pd
-import gc
 # import sandesh
 from sklearn.model_selection import GroupKFold
 
@@ -14,9 +14,9 @@ import metrics
 import mylogger
 import preprocessing
 import utils
-from runner import Runner
+from create_folds import create_folds
 from evaluater import WRMSSEEvaluator
-
+from runner import Runner
 
 parser = argparse.ArgumentParser(description='kaggle data science bowl 2019')
 parser.add_argument("--config", "-c", type=str,
@@ -72,7 +72,7 @@ try:
     # X, encoder_dict = preprocessing.label_encoding(
     #     X, categorical_feat, verbose=True)
     if args.debug:
-        model_params['learning_rate'] = 1
+        model_params['learning_rate'] = 10
 
     # preprocess for neural network
     # if config['model_class'] == 'ModelNNRegressor':
@@ -83,25 +83,23 @@ try:
     oof = np.zeros(len(X))
     # create folds
     # NFOLDS = 5
-    # group_kfold = GroupKFold(n_splits=5)
-    fold_indices = []
-    all_val_idx = []
-    X.reset_index(inplace=True)
-    train_idx = X.query('date <= "2016-03-27"').index.tolist()
-    val_idx = X.query(
-        '"2016-03-27" < date <= "2016-04-24"').index.tolist()
-    all_val_idx = all_val_idx + val_idx
-    fold_indices.append((train_idx, val_idx))
+    # fold_indices = []
+    # all_val_idx = []
+    # X.reset_index(inplace=True)
+    # train_idx = X.query('date <= "2016-03-27"').index.tolist()
+    # val_idx = X.query(
+    #     '"2016-03-27" < date <= "2016-04-24"').index.tolist()
+    # all_val_idx = all_val_idx + val_idx
+    # fold_indices.append((train_idx, val_idx))
+    fold_indices = create_folds(X)
+    # if args.debug:
+    #     fold_indices = fold_indices[:2]
     # X_train, y_train = X[all_features], X['demand']
     X_train = X[(X['date'] <= '2016-04-24')]
     X_test = X[(X['date'] > '2016-04-24')]
     # X_test = X_test[all_features]
     del X
     gc.collect()
-    # all_val_idx = []
-    # for i_fold, (train_idx, val_idx) in enumerate(group_kfold.split(new_train, groups=new_train['ins_id'])):
-    #     fold_indices.append((train_idx, val_idx))
-    #     print(len(train_idx), len(val_idx))
     # utils.reduce_mem_usage(X_train)
     # utils.reduce_mem_usage(X_test)
     utils.dump_pickle(X_train[all_features], result_dir / 'train_x.pkl')
@@ -123,8 +121,7 @@ try:
     X_train['pred_demand'] = oof_preds
     # evaluate wrmssee score
     encoder_dict = utils.load_pickle(utils.FEATURE_DIR / 'encoder.pkl')
-    utils.dump_pickle(X_train, 'tmp_X_train.pkl')
-    utils.dump_pickle(fold_indices, 'fold_indices.pkl')
+    score_list = []
     for train_idx, val_idx in fold_indices:
         # X_train['pred_demand'] = oof_preds
         train_df = preprocessing.melt_to_pivot(
@@ -137,23 +134,27 @@ try:
         preds_df = preds_df[[
             i for i in preds_df.columns if i.startswith('d_')]]
         score = wrmssee_evaluater.score(preds_df)
-        logger.debug(f'wrmssee score: {score}')
+        score_list.append(score)
+    print(score_list)
+    score = sum(score_list) / len(score_list)
+    logger.debug(f'average wrmssee score: {score}')
 
-    val_score = metrics.rmse(
-        oof_preds[all_val_idx], X_train[TARGET_COL][all_val_idx])
+    # val_score = metrics.rmse(
+    #     oof_preds[all_val_idx], X_train[TARGET_COL][all_val_idx])
     runner.save_importance_cv()
 
     logger.debug('-' * 30)
     logger.debug(f'WRMSSEE score: {score}')
-    logger.debug(f'OOF RMSE: {val_score}')
+    # logger.debug(f'OOF RMSE: {val_score}')
     # logger.debug(f'OOF QWK: {val_score}')
     logger.debug('-' * 30)
 
     # process test set
-    # X_test = utils.load_pickle(test_feat_path)
-    preds = runner.run_predict_cv(X_test[all_features])
+    logger.debug('training all data...')
+    runner.run_train_all()
+    # preds = runner.run_predict_cv(X_test[all_features])
+    preds = runner.run_predict_all(X_test[all_features])
     X_test[TARGET_COL] = preds
-    # utils.dump_pickle(X_test, result_dir / 'test_x_all.pkl')
 
     # make final prediction csv
     save_path = result_dir / f'submission_val{score:.5f}.csv'
