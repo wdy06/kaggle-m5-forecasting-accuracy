@@ -6,7 +6,7 @@ import shutil
 
 import numpy as np
 import pandas as pd
-# import sandesh
+import sandesh
 from sklearn.model_selection import GroupKFold
 
 import features
@@ -40,7 +40,7 @@ try:
     os.mkdir(result_dir)
 
     logger = mylogger.get_mylogger(filename=result_dir / 'log')
-    # sandesh.send(f'start: {exp_name}')
+    sandesh.send(f'start: {exp_name}')
     logger.debug(f'created: {result_dir}')
     logger.debug('loading data ...')
 
@@ -92,8 +92,8 @@ try:
     # all_val_idx = all_val_idx + val_idx
     # fold_indices.append((train_idx, val_idx))
     fold_indices = create_folds(X)
-    # if args.debug:
-    #     fold_indices = fold_indices[:2]
+    if args.debug:
+        fold_indices = fold_indices[:2]
     # X_train, y_train = X[all_features], X['demand']
     X_train = X[(X['date'] <= '2016-04-24')]
     X_test = X[(X['date'] > '2016-04-24')]
@@ -145,15 +145,17 @@ try:
 
     logger.debug('-' * 30)
     logger.debug(f'WRMSSEE score: {score}')
-    # logger.debug(f'OOF RMSE: {val_score}')
+    logger.debug(f'OOF WRMSSEE: {score}')
     # logger.debug(f'OOF QWK: {val_score}')
     logger.debug('-' * 30)
 
     # process test set
-    logger.debug('training all data...')
-    runner.run_train_all()
-    # preds = runner.run_predict_cv(X_test[all_features])
-    preds = runner.run_predict_all(X_test[all_features])
+    if args.debug:
+        preds = runner.run_predict_cv(X_test[all_features])
+    else:
+        logger.debug('training all data...')
+        runner.run_train_all()
+        preds = runner.run_predict_all(X_test[all_features])
     X_test[TARGET_COL] = preds
 
     # make final prediction csv
@@ -170,12 +172,12 @@ try:
     final = pd.concat([validation, evaluation])
     final.to_csv(save_path, index=False)
     logger.debug(f'save to {save_path}')
-    # sandesh.send(f'finish: {save_path}')
-    # sandesh.send('-' * 30)
+    sandesh.send(f'finish: {save_path}')
+    sandesh.send('-' * 30)
 
 
 except Exception as e:
     print(e)
-    # sandesh.send(e)
+    sandesh.send(e)
     logger.exception(e)
     raise e
