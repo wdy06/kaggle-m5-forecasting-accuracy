@@ -20,7 +20,7 @@ parser.add_argument("--debug", help="run debug mode",
 parser.add_argument("--input-dir", type=str, help="input directory path")
 args = parser.parse_args()
 
-print(f'on kaggle: {utils.ON_KAGGLE}')
+print(f'on kaggle: eutils.ON_KAGGLE}')
 print(utils.DATA_DIR)
 print(utils.RESULTS_BASE_DIR)
 

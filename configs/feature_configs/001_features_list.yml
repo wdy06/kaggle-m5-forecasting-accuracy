@@ -17,17 +17,28 @@ features:
     - snap_TX
     - snap_WI
     - sell_price
+    # lag feature
     - lag_t28
     - lag_t29
     - lag_t30
+    # lag rolling feature
     - lag28_rolling_mean_t7
-    - lag28_rolling_std_t7
     - lag28_rolling_mean_t30
     - lag28_rolling_mean_t90
     - lag28_rolling_mean_t180
+    - lag28_rolling_std_t7
     - lag28_rolling_std_t30
+    - lag28_rolling_std_t90
+    - lag28_rolling_std_t180
+    - lag28_rolling_skew_t7
     - lag28_rolling_skew_t30
+    - lag28_rolling_skew_t90
+    - lag28_rolling_skew_t180
+    - lag28_rolling_kurt_t7
     - lag28_rolling_kurt_t30
+    - lag28_rolling_kurt_t90
+    - lag28_rolling_kurt_t180
+    # price feature
     - price_change_t1
     - price_change_t365
     - rolling_price_std_t7
