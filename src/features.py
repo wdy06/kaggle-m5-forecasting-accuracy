@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import sandesh
 from tqdm import tqdm
+import traceback
 
 import preprocessing
 import utils
@@ -21,29 +22,22 @@ def simple_feature(data):
     # rolling demand features
     # lag feature
     # lag_list = [28, 29, 30]
+    # -------------------------------
     for lag in tqdm([28, 29, 30]):
         data[f'lag_t{lag}'] = data.groupby(
             ['id'])['demand'].transform(lambda x: x.shift(lag))
-        # for group_id, id_name in zip(group_ids, group_id_names):
-        #     data[f'lag_t{lag}_{id_name}'] = data.groupby(
-        #         group_id)['demand'].transform(lambda x: x.shift(lag))
+
     for lag in tqdm([28, 29, 30]):
         print(lag)
         for group_id, id_name in zip(group_ids, group_id_names):
-            # data[f'lag_t28_{id_name}'] = data.groupby(
-            #     group_id)['demand'].transform(lambda x: x.shift(lag))
             if isinstance(group_id, str):
                 group_id = [group_id]
-            # data[f'lag_t28_{id_name}'] = data.groupby(
-            #     group_id + ['date'])['lag_t28'].transform(np.mean)
             tmp = data.groupby(
                 group_id + ['date'])['demand'].mean().groupby(group_id).apply(lambda x: x.shift(lag))
             tmp.name = f'lag_t{lag}_{id_name}'
             tmp = tmp.reset_index()
             data = pd.merge(data, tmp, on=group_id + ['date'])
-
-            # data[f'lag_t{lag}_{id_name}'] = data.groupby(
-            #     group_id + ['date'])['demand'].mean().groupby(group_id).transform(lambda x: x.shift(lag)).values
+    # -------------------------------
 
     # rolling mean
     # rolling_list = [7, 14, 21, 28]
@@ -52,13 +46,26 @@ def simple_feature(data):
     #         ['id'])['demand'].transform(lambda x: x.rolling(window_size).mean())
 
     # lag rolling
-    # for lag in [28]:
-    #     for window in [7, 30, 90, 180]:
-    #         for group_id, id_name in zip(group_ids, group_id_names):
-    #             data[f'lag{lag}_rolling_mean_t{window}_{id_name}'] = data.groupby(
-    #                 group_id)['demand'].transform(lambda x: x.shift(lag).rolling(window).mean())
-    #             data[f'lag{lag}_rolling_std_t{window}_{id_name}'] = data.groupby(
-    #                 group_id)['demand'].transform(lambda x: x.shift(lag).rolling(window).std())
+    for lag in [28]:
+        for window in tqdm([7, 30, 90, 180]):
+
+            data[f'lag_t{lag}_rolling_mean_t{window}'] = data.groupby(
+                ['id'])['demand'].transform(lambda x: x.shift(lag).rolling(window).mean())
+
+            for group_id, id_name in zip(group_ids, group_id_names):
+                if isinstance(group_id, str):
+                    group_id = [group_id]
+                agg_dict = {f'lag_t{lag}_rolling_mean_t{window}_{id_name}': 'mean',
+                            f'lag_t{lag}_rolling_std_t{window}_{id_name}': 'std'}
+                tmp = data.groupby(
+                    group_id + ['date'])['demand'].mean().groupby(group_id).apply(lambda x: x.shift(lag).rolling(window).agg(agg_dict))
+                # tmp.name = f'lag_t{lag}_rolling_mean_t{window}_{id_name}'
+                tmp = tmp.reset_index()
+                data = pd.merge(data, tmp, on=group_id + ['date'])
+                # data[f'lag{lag}_rolling_mean_t{window}_{id_name}'] = data.groupby(
+                #     group_id)['demand'].transform(lambda x: x.shift(lag).rolling(window).mean())
+                # data[f'lag{lag}_rolling_std_t{window}_{id_name}'] = data.groupby(
+                #     group_id)['demand'].transform(lambda x: x.shift(lag).rolling(window).std())
     #             data[f'lag{lag}_rolling_skew_t{window}_{id_name}'] = data.groupby(
     #                 group_id)['demand'].transform(lambda x: x.shift(lag).rolling(window).skew())
     #             data[f'lag{lag}_rolling_kurt_t{window}_{id_name}'] = data.groupby(
@@ -117,7 +124,7 @@ if __name__ == '__main__':
         utils.dump_pickle(encoder, encoder_path)
         print('finished generating features !!')
     except Exception as e:
-        print(e)
         sandesh.send(str(e))
+        raise
     else:
         sandesh.send(f'finished generating features !!')

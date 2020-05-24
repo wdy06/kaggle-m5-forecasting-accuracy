@@ -154,6 +154,7 @@ try:
         preds = runner.run_predict_cv(X_test[all_features])
     else:
         logger.debug('training all data...')
+        # preds = runner.run_predict_cv(X_test[all_features])
         runner.run_train_all()
         preds = runner.run_predict_all(X_test[all_features])
     X_test[TARGET_COL] = preds
@@ -178,6 +179,6 @@ try:
 
 except Exception as e:
     print(e)
-    sandesh.send(e)
+    sandesh.send(str(e))
     logger.exception(e)
     raise e
