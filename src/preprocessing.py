@@ -121,3 +121,13 @@ def label_encoding(df, cat_features, verbose=False):
         df[feature] = encoder.fit_transform(df[feature])
         encoder_dict[feature] = encoder
     return df, encoder_dict
+
+
+def add_separated_item_id(df):
+    tmp = df['item_id'].str.split('_', n=2, expand=True)
+    tmp[0] = tmp[0].str.cat(tmp[1], sep='_')
+    tmp[1] = tmp[2].str.slice(stop=1)
+    tmp[2] = tmp[2].str.slice(start=1)
+    tmp.columns = ['item_id_1', 'item_id_2', 'item_id_3']
+    df = pd.concat([df, tmp], axis=1)
+    return df
