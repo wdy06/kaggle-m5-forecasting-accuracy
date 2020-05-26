@@ -66,11 +66,6 @@ try:
     model_params = config['model_params']
     model_params['categorical_feature'] = categorical_feat
 
-    # label encoding
-    # X, encoder_dict = preprocessing.label_encoding(
-    #     X, categorical_feat, verbose=True)
-    # X, encoder_dict = preprocessing.label_encoding(
-    #     X, categorical_feat, verbose=True)
     if args.debug:
         model_params['learning_rate'] = 10
 
@@ -82,22 +77,14 @@ try:
 
     oof = np.zeros(len(X))
     # create folds
-    # NFOLDS = 5
-    # fold_indices = []
-    # all_val_idx = []
-    # X.reset_index(inplace=True)
-    # train_idx = X.query('date <= "2016-03-27"').index.tolist()
-    # val_idx = X.query(
-    #     '"2016-03-27" < date <= "2016-04-24"').index.tolist()
-    # all_val_idx = all_val_idx + val_idx
-    # fold_indices.append((train_idx, val_idx))
-    fold_indices = create_folds(X)
+    # fold_indices = create_folds(X)
+    fold_indices = utils.load_pickle(utils.FEATURE_DIR / 'fold_indices.pkl')
+
     if args.debug:
         fold_indices = fold_indices[:2]
-    # X_train, y_train = X[all_features], X['demand']
     X_train = X[(X['date'] <= '2016-04-24')]
     X_test = X[(X['date'] > '2016-04-24')]
-    # X_test = X_test[all_features]
+
     del X
     gc.collect()
     # utils.reduce_mem_usage(X_train)
@@ -107,7 +94,6 @@ try:
     utils.dump_pickle(X_train[TARGET_COL], result_dir / 'train_y.pkl')
 
     utils.dump_pickle(fold_indices, result_dir / 'fold_indices.pkl')
-    # print(X_train.dtypes)
     runner = Runner(run_name='train_cv',
                     x=X_train[all_features],
                     y=X_train[TARGET_COL],
@@ -123,7 +109,6 @@ try:
     encoder_dict = utils.load_pickle(utils.FEATURE_DIR / 'encoder.pkl')
     score_list = []
     for train_idx, val_idx in fold_indices:
-        # X_train['pred_demand'] = oof_preds
         train_df = preprocessing.melt_to_pivot(
             X_train.iloc[train_idx], 'demand', encoder_dict)
         valid_df = preprocessing.melt_to_pivot(
@@ -139,14 +124,11 @@ try:
     score = sum(score_list) / len(score_list)
     logger.debug(f'average wrmssee score: {score}')
 
-    # val_score = metrics.rmse(
-    #     oof_preds[all_val_idx], X_train[TARGET_COL][all_val_idx])
     runner.save_importance_cv()
 
     logger.debug('-' * 30)
     logger.debug(f'WRMSSEE score: {score}')
     logger.debug(f'OOF WRMSSEE: {score}')
-    # logger.debug(f'OOF QWK: {val_score}')
     logger.debug('-' * 30)
 
     # process test set

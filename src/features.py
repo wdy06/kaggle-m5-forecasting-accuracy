@@ -7,6 +7,7 @@ import traceback
 import preprocessing
 import utils
 from dataset import M5Dataset
+from create_folds import create_folds
 
 
 def simple_feature(data):
@@ -105,6 +106,7 @@ if __name__ == '__main__':
     output_path = utils.FEATURE_DIR / 'baseline_features.pkl'
     encoder_path = utils.FEATURE_DIR / 'encoder.pkl'
     melted_path = utils.FEATURE_DIR / 'melted.pkl'
+    fold_indices_path = utils.FEATURE_DIR / 'fold_indices.pkl'
     sandesh.send(f'start generating feature')
     try:
         print('generating features...')
@@ -112,14 +114,17 @@ if __name__ == '__main__':
         # data = preprocessing.melt_and_merge(
         #     dataset.calendar, dataset.sell_prices, dataset.main_df, dataset.submission,
         #     merge=True)
+        # data = preprocessing.add_separated_item_id(data)
         # utils.dump_pickle(data, melted_path)
         data = utils.load_pickle(melted_path)
         # label encoding
-        cat = ['item_id', 'dept_id', 'cat_id', 'store_id', 'state_id',
+        cat = ['item_id', 'item_id_1', 'item_id_2', 'item_id_3', 'dept_id', 'cat_id', 'store_id', 'state_id',
                'event_name_1', 'event_type_1', 'event_name_2', 'event_type_2']
         data, encoder = preprocessing.label_encoding(df=data, cat_features=cat,
                                                      verbose=True)
         data = generate_features(data)
+        fold_indices = create_folds(data)
+        utils.dump_pickle(fold_indices, fold_indices_path)
         utils.dump_pickle(data, output_path)
         utils.dump_pickle(encoder, encoder_path)
         print('finished generating features !!')
