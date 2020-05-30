@@ -187,14 +187,16 @@ def save_importances(importances_, save_dir, figsize=(12, 18), max_feat_num=300)
     plt.savefig(save_dir / 'importances.png')
 
 
-def reduce_mem_usage(df):
+def reduce_mem_usage(df, excludes=None):
     """ iterate through all the columns of a dataframe and modify the data type
         to reduce memory usage.
     """
     start_mem = df.memory_usage().sum() / 1024**2
     print('Memory usage of dataframe is {:.2f} MB'.format(start_mem))
-
-    for col in df.columns:
+    if excludes is None:
+        excludes = []
+    check_columns = [col for col in df.columns if col not in excludes]
+    for col in check_columns:
         col_type = df[col].dtype
 
         if col_type != object:
