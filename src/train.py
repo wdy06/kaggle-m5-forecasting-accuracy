@@ -50,7 +50,8 @@ try:
 
     features_list = utils.load_yaml(args.feature)
     utils.dump_yaml(features_list, result_dir / 'features_list.yml')
-    all_features = features_list['features']
+    all_features = features_list['features']['original'] + \
+        features_list['features']['generated']
     categorical_feat = features_list['categorical_features']
 
     logger.debug(all_features)
