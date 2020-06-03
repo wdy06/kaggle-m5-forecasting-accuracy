@@ -1,0 +1,310 @@
+features:
+    original:
+        - item_id
+        # - item_id_1
+        # - item_id_2
+        # - item_id_3
+        - dept_id
+        - cat_id
+        - store_id
+        - state_id
+        # - year
+        # - month
+        # - week
+        # - day
+        # - dayofweek
+        - event_name_1
+        - event_type_1
+        - event_name_2
+        - event_type_2
+        - snap_CA
+        - snap_TX
+        - snap_WI
+        - sell_price
+    generated:
+        - year
+        - month
+        - week
+        - day
+        - dayofweek
+        # lag feature
+        - lag_t28
+        - lag_t29
+        - lag_t30
+        - lag_t28_all
+        - lag_t29_all
+        - lag_t30_all
+        - lag_t28_state
+        - lag_t29_state
+        - lag_t30_state
+        - lag_t28_store
+        - lag_t29_store
+        - lag_t30_store
+        - lag_t28_cat
+        - lag_t29_cat
+        - lag_t30_cat
+        - lag_t28_dept
+        - lag_t29_dept
+        - lag_t30_dept
+        - lag_t28_item
+        - lag_t29_item
+        - lag_t30_item
+        - lag_t28_state_cat
+        - lag_t29_state_cat
+        - lag_t30_state_cat
+        - lag_t28_state_dept
+        - lag_t29_state_dept
+        - lag_t30_state_dept
+        - lag_t28_state_cat
+        - lag_t29_state_cat
+        - lag_t30_state_cat
+        - lag_t28_store_dept
+        - lag_t29_store_dept
+        - lag_t30_store_dept
+        - lag_t28_item_state
+        - lag_t29_item_state
+        - lag_t30_item_state
+        - lag_t28_item_store
+        - lag_t29_item_store
+        - lag_t30_item_store
+        # lag rolling feature
+        - lag_t28_rolling_mean_t7
+        - lag_t28_rolling_mean_t30
+        - lag_t28_rolling_mean_t90
+        - lag_t28_rolling_mean_t180
+        # - lag_t28_rolling_std_t7
+        # - lag_t28_rolling_std_t30
+        # - lag_t28_rolling_std_t90
+        # - lag_t28_rolling_std_t180
+        # - lag28_rolling_skew_t7_id
+        # - lag28_rolling_skew_t30_id
+        # - lag28_rolling_skew_t90_id
+        # - lag28_rolling_skew_t180_id
+        # - lag28_rolling_kurt_t7_id
+        # - lag28_rolling_kurt_t30_id
+        # - lag28_rolling_kurt_t90_id
+        # - lag28_rolling_kurt_t180_id
+        # -----------------
+        - lag_t28_rolling_mean_t7_all
+        - lag_t28_rolling_mean_t30_all
+        - lag_t28_rolling_mean_t90_all
+        - lag_t28_rolling_mean_t180_all
+        - lag_t28_rolling_std_t7_all
+        - lag_t28_rolling_std_t30_all
+        - lag_t28_rolling_std_t90_all
+        - lag_t28_rolling_std_t180_all
+        # - lag28_rolling_skew_t7_all
+        # - lag28_rolling_skew_t30_all
+        # - lag28_rolling_skew_t90_all
+        # - lag28_rolling_skew_t180_all
+        # - lag28_rolling_kurt_t7_all
+        # - lag28_rolling_kurt_t30_all
+        # - lag28_rolling_kurt_t90_all
+        # - lag28_rolling_kurt_t180_all
+        # -----------------
+        - lag_t28_rolling_mean_t7_state
+        - lag_t28_rolling_mean_t30_state
+        - lag_t28_rolling_mean_t90_state
+        - lag_t28_rolling_mean_t180_state
+        - lag_t28_rolling_std_t7_state
+        - lag_t28_rolling_std_t30_state
+        - lag_t28_rolling_std_t90_state
+        - lag_t28_rolling_std_t180_state
+        # - lag28_rolling_skew_t7_state
+        # - lag28_rolling_skew_t30_state
+        # - lag28_rolling_skew_t90_state
+        # - lag28_rolling_skew_t180_state
+        # - lag28_rolling_kurt_t7_state
+        # - lag28_rolling_kurt_t30_state
+        # - lag28_rolling_kurt_t90_state
+        # - lag28_rolling_kurt_t180_state
+        # -----------------
+        - lag_t28_rolling_mean_t7_store
+        - lag_t28_rolling_mean_t30_store
+        - lag_t28_rolling_mean_t90_store
+        - lag_t28_rolling_mean_t180_store
+        - lag_t28_rolling_std_t7_store
+        - lag_t28_rolling_std_t30_store
+        - lag_t28_rolling_std_t90_store
+        - lag_t28_rolling_std_t180_store
+        # - lag28_rolling_skew_t7_store
+        # - lag28_rolling_skew_t30_store
+        # - lag28_rolling_skew_t90_store
+        # - lag28_rolling_skew_t180_store
+        # - lag28_rolling_kurt_t7_store
+        # - lag28_rolling_kurt_t30_store
+        # - lag28_rolling_kurt_t90_store
+        # - lag28_rolling_kurt_t180_store
+        # -----------------
+        - lag_t28_rolling_mean_t7_cat
+        - lag_t28_rolling_mean_t30_cat
+        - lag_t28_rolling_mean_t90_cat
+        - lag_t28_rolling_mean_t180_cat
+        - lag_t28_rolling_std_t7_cat
+        - lag_t28_rolling_std_t30_cat
+        - lag_t28_rolling_std_t90_cat
+        - lag_t28_rolling_std_t180_cat
+        # - lag28_rolling_skew_t7_cat
+        # - lag28_rolling_skew_t30_cat
+        # - lag28_rolling_skew_t90_cat
+        # - lag28_rolling_skew_t180_cat
+        # - lag28_rolling_kurt_t7_cat
+        # - lag28_rolling_kurt_t30_cat
+        # - lag28_rolling_kurt_t90_cat
+        # - lag28_rolling_kurt_t180_cat
+        # -----------------
+        - lag_t28_rolling_mean_t7_dept
+        - lag_t28_rolling_mean_t30_dept
+        - lag_t28_rolling_mean_t90_dept
+        - lag_t28_rolling_mean_t180_dept
+        - lag_t28_rolling_std_t7_dept
+        - lag_t28_rolling_std_t30_dept
+        - lag_t28_rolling_std_t90_dept
+        - lag_t28_rolling_std_t180_dept
+        # - lag28_rolling_skew_t7_dept
+        # - lag28_rolling_skew_t30_dept
+        # - lag28_rolling_skew_t90_dept
+        # - lag28_rolling_skew_t180_dept
+        # - lag28_rolling_kurt_t7_dept
+        # - lag28_rolling_kurt_t30_dept
+        # - lag28_rolling_kurt_t90_dept
+        # - lag28_rolling_kurt_t180_dept
+        # -----------------
+        - lag_t28_rolling_mean_t7_item
+        - lag_t28_rolling_mean_t30_item
+        - lag_t28_rolling_mean_t90_item
+        - lag_t28_rolling_mean_t180_item
+        - lag_t28_rolling_std_t7_item
+        - lag_t28_rolling_std_t30_item
+        - lag_t28_rolling_std_t90_item
+        - lag_t28_rolling_std_t180_item
+        # - lag28_rolling_skew_t7_item
+        # - lag28_rolling_skew_t30_item
+        # - lag28_rolling_skew_t90_item
+        # - lag28_rolling_skew_t180_item
+        # - lag28_rolling_kurt_t7_item
+        # - lag28_rolling_kurt_t30_item
+        # - lag28_rolling_kurt_t90_item
+        # - lag28_rolling_kurt_t180_item
+        # -----------------
+        - lag_t28_rolling_mean_t7_state_cat
+        - lag_t28_rolling_mean_t30_state_cat
+        - lag_t28_rolling_mean_t90_state_cat
+        - lag_t28_rolling_mean_t180_state_cat
+        - lag_t28_rolling_std_t7_state_cat
+        - lag_t28_rolling_std_t30_state_cat
+        - lag_t28_rolling_std_t90_state_cat
+        - lag_t28_rolling_std_t180_state_cat
+        # - lag28_rolling_skew_t7_state_cat
+        # - lag28_rolling_skew_t30_state_cat
+        # - lag28_rolling_skew_t90_state_cat
+        # - lag28_rolling_skew_t180_state_cat
+        # - lag28_rolling_kurt_t7_state_cat
+        # - lag28_rolling_kurt_t30_state_cat
+        # - lag28_rolling_kurt_t90_state_cat
+        # - lag28_rolling_kurt_t180_state_cat
+        # -----------------
+        - lag_t28_rolling_mean_t7_state_dept
+        - lag_t28_rolling_mean_t30_state_dept
+        - lag_t28_rolling_mean_t90_state_dept
+        - lag_t28_rolling_mean_t180_state_dept
+        - lag_t28_rolling_std_t7_state_dept
+        - lag_t28_rolling_std_t30_state_dept
+        - lag_t28_rolling_std_t90_state_dept
+        - lag_t28_rolling_std_t180_state_dept
+        # - lag28_rolling_skew_t7_state_dept
+        # - lag28_rolling_skew_t30_state_dept
+        # - lag28_rolling_skew_t90_state_dept
+        # - lag28_rolling_skew_t180_state_dept
+        # - lag28_rolling_kurt_t7_state_dept
+        # - lag28_rolling_kurt_t30_state_dept
+        # - lag28_rolling_kurt_t90_state_dept
+        # - lag28_rolling_kurt_t180_state_dept
+        # -----------------
+        - lag_t28_rolling_mean_t7_store_cat
+        - lag_t28_rolling_mean_t30_store_cat
+        - lag_t28_rolling_mean_t90_store_cat
+        - lag_t28_rolling_mean_t180_store_cat
+        - lag_t28_rolling_std_t7_store_cat
+        - lag_t28_rolling_std_t30_store_cat
+        - lag_t28_rolling_std_t90_store_cat
+        - lag_t28_rolling_std_t180_store_cat
+        # - lag28_rolling_skew_t7_store_cat
+        # - lag28_rolling_skew_t30_store_cat
+        # - lag28_rolling_skew_t90_store_cat
+        # - lag28_rolling_skew_t180_store_cat
+        # - lag28_rolling_kurt_t7_store_cat
+        # - lag28_rolling_kurt_t30_store_cat
+        # - lag28_rolling_kurt_t90_store_cat
+        # - lag28_rolling_kurt_t180_store_cat
+        # -----------------
+        - lag_t28_rolling_mean_t7_store_dept
+        - lag_t28_rolling_mean_t30_store_dept
+        - lag_t28_rolling_mean_t90_store_dept
+        - lag_t28_rolling_mean_t180_store_dept
+        - lag_t28_rolling_std_t7_store_dept
+        - lag_t28_rolling_std_t30_store_dept
+        - lag_t28_rolling_std_t90_store_dept
+        - lag_t28_rolling_std_t180_store_dept
+        # - lag28_rolling_skew_t7_store_dept
+        # - lag28_rolling_skew_t30_store_dept
+        # - lag28_rolling_skew_t90_store_dept
+        # - lag28_rolling_skew_t180_store_dept
+        # - lag28_rolling_kurt_t7_store_dept
+        # - lag28_rolling_kurt_t30_store_dept
+        # - lag28_rolling_kurt_t90_store_dept
+        # - lag28_rolling_kurt_t180_store_dept
+        # -----------------
+        - lag_t28_rolling_mean_t7_item_state
+        - lag_t28_rolling_mean_t30_item_state
+        - lag_t28_rolling_mean_t90_item_state
+        - lag_t28_rolling_mean_t180_item_state
+        - lag_t28_rolling_std_t7_item_state
+        - lag_t28_rolling_std_t30_item_state
+        - lag_t28_rolling_std_t90_item_state
+        - lag_t28_rolling_std_t180_item_state
+        # - lag28_rolling_skew_t7_item_state
+        # - lag28_rolling_skew_t30_item_state
+        # - lag28_rolling_skew_t90_item_state
+        # - lag28_rolling_skew_t180_item_state
+        # - lag28_rolling_kurt_t7_item_state
+        # - lag28_rolling_kurt_t30_item_state
+        # - lag28_rolling_kurt_t90_item_state
+        # - lag28_rolling_kurt_t180_item_state
+        # -----------------
+        - lag_t28_rolling_mean_t7_item_store
+        - lag_t28_rolling_mean_t30_item_store
+        - lag_t28_rolling_mean_t90_item_store
+        - lag_t28_rolling_mean_t180_item_store
+        - lag_t28_rolling_std_t7_item_store
+        - lag_t28_rolling_std_t30_item_store
+        - lag_t28_rolling_std_t90_item_store
+        - lag_t28_rolling_std_t180_item_store
+        # - lag28_rolling_skew_t7_item_store
+        # - lag28_rolling_skew_t30_item_store
+        # - lag28_rolling_skew_t90_item_store
+        # - lag28_rolling_skew_t180_item_store
+        # - lag28_rolling_kurt_t7_item_store
+        # - lag28_rolling_kurt_t30_item_store
+        # - lag28_rolling_kurt_t90_item_store
+        # - lag28_rolling_kurt_t180_item_store
+        # -----------------
+        # price feature
+        - price_change_t1
+        - price_change_t365
+        - rolling_price_std_t7
+        - rolling_price_std_t30
+
+categorical_features:
+    - item_id
+    # - item_id_1
+    # - item_id_2
+    # - item_id_3
+    - dept_id
+    - cat_id
+    - store_id
+    - state_id
+    - event_name_1
+    - event_type_1
+    - event_name_2
+    - event_type_2
