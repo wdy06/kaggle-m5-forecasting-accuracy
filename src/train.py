@@ -17,6 +17,7 @@ import utils
 from create_folds import create_folds
 from evaluater import WRMSSEEvaluator
 from runner import Runner
+import helper
 
 parser = argparse.ArgumentParser(description='kaggle data science bowl 2019')
 parser.add_argument("--config", "-c", type=str,
@@ -86,8 +87,8 @@ try:
     X_train = X[(X['date'] <= '2016-04-24')]
     X_test = X[(X['date'] > '2016-04-24')]
 
-    del X
-    gc.collect()
+    # del X
+    # gc.collect()
     # utils.reduce_mem_usage(X_train)
     # utils.reduce_mem_usage(X_test)
     utils.dump_pickle(X_train[all_features], result_dir / 'train_x.pkl')
@@ -135,11 +136,15 @@ try:
     # process test set
     if args.debug:
         preds = runner.run_predict_cv(X_test[all_features])
+        # preds = helper.recursive_predict(
+        #     runner, features_list, all_features, X, X_test, cv=True)
     else:
         logger.debug('training all data...')
         # preds = runner.run_predict_cv(X_test[all_features])
         runner.run_train_all()
         preds = runner.run_predict_all(X_test[all_features])
+        # preds = helper.recursive_predict(
+        #     runner, features_list, all_features, X, X_test, cv=False)
     X_test[TARGET_COL] = preds
 
     # make final prediction csv

@@ -4,6 +4,7 @@ from sklearn.preprocessing import LabelEncoder
 from joblib import Parallel, delayed
 
 import utils
+from tqdm import tqdm
 
 
 def melt_and_merge(calendar, sell_prices, sales_train_validation, submission,

@@ -25,13 +25,13 @@ def simple_feature(data):
     # data['all_id'] = 'all'
     # rolling demand features
     # lag feature
-    # lag_list = [28, 29, 30]
+    lag_list = [7, 14, 21, 28, 29, 30]
     # -------------------------------
-    for lag in tqdm([28, 29, 30]):
+    for lag in tqdm(lag_list):
         ret_df[f'lag_t{lag}'] = data.groupby(
             ['id'])['demand'].transform(lambda x: x.shift(lag))
 
-    for lag in tqdm([28, 29, 30]):
+    for lag in tqdm(lag_list):
         for group_id, id_name in zip(group_ids, group_id_names):
             if isinstance(group_id, str):
                 group_id = [group_id]
@@ -140,6 +140,7 @@ if __name__ == '__main__':
                                                      verbose=True)
         tmp = generate_features(data, save=True)
         data = pd.concat([data, tmp], axis=1)
+        data = utils.reduce_mem_usage(data, excludes=['date'])
         fold_indices = create_folds(data)
         utils.dump_pickle(fold_indices, fold_indices_path)
         utils.dump_pickle(data, output_path)
