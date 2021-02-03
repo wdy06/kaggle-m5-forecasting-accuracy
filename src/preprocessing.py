@@ -61,7 +61,7 @@ def melt_and_merge(calendar, sell_prices, sales_train_validation, submission,
 
     # delete test2 for now
     # TODO: update for test2
-    data = data[data['part'] != 'test2']
+    data = data[data['part'] != 'test1']
 
     if merge:
         # notebook crash with the entire dataset (maybee use tensorflow, dask, pyspark xD)
@@ -119,7 +119,7 @@ def label_encoding(df, cat_features, verbose=False):
         if verbose:
             print(f'label encoding {feature} ...')
         encoder = LabelEncoder()
-        df[feature] = encoder.fit_transform(df[feature])
+        df[feature] = encoder.fit_transform(df[feature].astype(str))
         encoder_dict[feature] = encoder
     return df, encoder_dict
 

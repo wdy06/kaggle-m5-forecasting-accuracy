@@ -25,7 +25,7 @@ def simple_feature(data):
     # data['all_id'] = 'all'
     # rolling demand features
     # lag feature
-    lag_list = [7, 14, 21, 28, 29, 30]
+    lag_list = [28, 29, 30]
     # -------------------------------
     for lag in tqdm(lag_list):
         ret_df[f'lag_t{lag}'] = data.groupby(
@@ -124,13 +124,13 @@ if __name__ == '__main__':
     sandesh.send(f'start generating feature')
     try:
         print('generating features...')
-        # dataset = M5Dataset()
-        # data = preprocessing.melt_and_merge(
-        #     dataset.calendar, dataset.sell_prices, dataset.main_df, dataset.submission,
-        #     merge=True)
-        # data = preprocessing.add_separated_item_id(data)
-        # utils.dump_pickle(data, melted_path)
-        data = utils.load_pickle(melted_path)
+        dataset = M5Dataset()
+        data = preprocessing.melt_and_merge(
+            dataset.calendar, dataset.sell_prices, dataset.main_df, dataset.submission,
+            merge=True)
+        data = preprocessing.add_separated_item_id(data)
+        utils.dump_pickle(data, melted_path)
+        # data = utils.load_pickle(melted_path)
         data['date'] = pd.to_datetime(data['date'])
         data['all_id'] = 'all'
         # label encoding

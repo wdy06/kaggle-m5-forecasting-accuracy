@@ -85,7 +85,8 @@ try:
     if args.debug:
         fold_indices = fold_indices[:2]
     X_train = X[(X['date'] <= '2016-04-24')]
-    X_test = X[(X['date'] > '2016-04-24')]
+    # X_test = X[(X['date'] > '2016-04-24')]
+    X_test = X[(X['date'] > '2016-05-22')]
 
     # del X
     # gc.collect()
@@ -155,9 +156,12 @@ try:
                            columns='date', values='demand').reset_index()
     predictions.columns = ['id'] + ['F' + str(i + 1) for i in range(28)]
     evaluation_rows = [row for row in submission['id'] if 'evaluation' in row]
+    validation_rows = [row for row in submission['id'] if 'validation' in row]
     # TODO: predict of evaluation are all 0 now
-    evaluation = submission[submission['id'].isin(evaluation_rows)]
-    validation = submission[['id']].merge(predictions, on='id')
+    # evaluation = submission[submission['id'].isin(evaluation_rows)]
+    # validation = submission[['id']].merge(predictions, on='id')
+    evaluation = submission[['id']].merge(predictions, on='id')
+    validation = submission[submission['id'].isin(validation_rows)]
     final = pd.concat([validation, evaluation])
     final.to_csv(save_path, index=False)
     logger.debug(f'save to {save_path}')
